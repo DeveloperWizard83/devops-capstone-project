@@ -68,6 +68,7 @@ class PersistentBase:
         """Returns all of the records in the database"""
         logger.info("Processing all records")
         return cls.query.all()
+        
 
     @classmethod
     def find(cls, by_id):
@@ -143,4 +144,3 @@ class Account(db.Model, PersistentBase):
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
-
