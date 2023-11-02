@@ -4,9 +4,8 @@ Account Service
 This microservice handles the lifecycle of Accounts
 """
 # pylint: disable=unused-import
-from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
+from flask import jsonify, request, make_response, abort, url_for  # noqa: F401
 from service.models import Account, db
-from service.common import status  # HTTP Status Codes
 from . import app  # Import Flask application
 
 
@@ -20,10 +19,9 @@ def create_account():
     account.deserialize(data)
     db.session.add(account)
     db.session.commit()
-    
     location_url = url_for("get_account", account_id=account.id, _external=True)
-    
     return make_response(jsonify(account.serialize()), 201, {"Location": location_url})
+
 
 @app.route("/accounts/<int:account_id>", methods=["GET"])
 def get_account(account_id):
@@ -33,12 +31,14 @@ def get_account(account_id):
 
     return jsonify(account.serialize()), 200
 
+
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
     accounts = Account.query.all()
     account_list = [account.serialize() for account in accounts]
 
     return jsonify(account_list), 200
+
 
 @app.route("/accounts/<int:account_id>", methods=["PUT"])
 def update_account(account_id):
@@ -56,6 +56,7 @@ def update_account(account_id):
 
     return jsonify(account.serialize()), 200
 
+
 @app.route("/accounts/<int:account_id>", methods=["DELETE"])
 def delete_account(account_id):
     account = Account.query.get(account_id)
@@ -64,7 +65,7 @@ def delete_account(account_id):
 
     db.session.delete(account)
     db.session.commit()
-    
+
     return "", 204
 
 if __name__ == '__main__':
