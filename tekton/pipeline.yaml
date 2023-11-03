@@ -9,6 +9,7 @@ spec:
     - name: repo-url
     - name: branch
       default: main
+    - name: build-image  # Add this parameter for the build image name
   tasks:
     - name: init
       workspaces:
@@ -36,11 +37,9 @@ spec:
         - name: source
           workspace: pipeline-workspace
       taskRef:
-        name: flake8  # Reference the flake8 task here
+        name: flake8
       runAfter:
         - clone
-
-# Add more tasks as needed for your pipeline
 
     - name: tests
       workspaces:
@@ -49,9 +48,22 @@ spec:
       taskRef:
         name: nose
       params:
-      - name: database_uri
-        value: "sqlite:///test.db"
-      - name: args
-        value: "-v --with-spec --spec-color"
+        - name: database_uri
+          value: "sqlite:///test.db"
+        - name: args
+          value: "-v --with-spec --spec-color"
       runAfter:
         - clone
+
+    - name: build
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      taskRef:
+        name: build  # Reference the build task here
+      params:
+        - name: IMAGE
+          value: "$(params.build-image)"
+      runAfter:
+        - tests
+        - lint
